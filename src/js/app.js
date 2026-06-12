@@ -58,14 +58,20 @@ class MovieTable {
     }
 
     sortData() {
-        const sorted = [...moviesData];
+        const rows = document.querySelectorAll('#movies-body tr');
+        const sortedRows = Array.from(rows);
 
-        sorted.sort((a, b) => {
-            let aVal = a[this.currentField];
-            let bVal = b[this.currentField];
+        sortedRows.sort((rowA, rowB) => {
+            let aVal = rowA.getAttribute(`data-${this.currentField}`);
+            let bVal = rowB.getAttribute(`data-${this.currentField}`);
 
-            // Для строк сравниваем без учета регистра
-            if (typeof aVal === 'string') {
+            if (this.currentField === 'imdb') {
+                aVal = parseFloat(aVal);
+                bVal = parseFloat(bVal);
+            } else if (this.currentField === 'id' || this.currentField === 'year') {
+                aVal = parseInt(aVal);
+                bVal = parseInt(bVal);
+            } else {
                 aVal = aVal.toLowerCase();
                 bVal = bVal.toLowerCase();
             }
@@ -75,7 +81,11 @@ class MovieTable {
             return 0;
         });
 
-        return sorted;
+        const tbody = document.getElementById('movies-body');
+        tbody.innerHTML = '';
+        sortedRows.forEach(row => tbody.appendChild(row));
+
+        return sortedRows;
     }
 
     startSorting() {
